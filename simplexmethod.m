@@ -9,7 +9,6 @@
 function.
 %}
 
-
 %{ 
 Bust, faulty implimentation and miscommunication (my bad :3) 
 Due to the highly non-linear nature and iterative process of the
@@ -26,7 +25,7 @@ TODO:
 
 
 
-
+% HWEloooo
 
 
 function [x_opt, z_opt] = simplexmethod(A, b, c)
