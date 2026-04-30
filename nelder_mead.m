@@ -23,108 +23,121 @@
 %http://www.scholarpedia.org/article/Nelder-Mead_algorithm
 
 function[x_opt, f_opt, iter] = nelder_mead(obj_fun, x0, t0, tf)
+    
+    alpha = 1;
+    gamma = 2;
+    rho = 0.5;
+    sigma = 0.5;
 
-alpha = 1;
-gamma = 2;
-rho = 0.5;
-sigma = 0.5;
+    tol = 1e-4;
+    maxiter = 60;
+    n = length(x0);
 
-tol = 1e-4;
-maxiter = 60;
-n = length(x0);
+    get_f = @(x_vec,tee0, teef) - obj_fun(x_vec, tee0, teef);
 
-get_f@(x_vec) - obj_fun(x_vec, 10, tf);
-step_size = [5; 10; 10; 10];
+    step_size = [5; 10; 10; 10];
 
-simplex = zeros(n, n+1);
-simplex(:,1) = x0(:);
-
-for i = 2:n+1
-    y = x0(:);
-    y(i-1) = y(i-1) + step_size(i-1);
-    simplex(:,i) = wrap_angles(y);
-end 
-
-iter = 0;
-
-% Sorting
-
-while iter < maxiter
-    [fvals, idx] = sort(fvals);
-    simplex = simplex(:, idx);
-
-    best = simplex(:,1);
-    worst = simplex(:,end);
-
-    if max(abs(fvals - fvlas(1))) < tol
-        break;
+    simplex = zeros(n, n+1);
+    simplex(:,1) = x0(:);
+    
+    for i = 2:n+1
+        y = x0(:);
+        y(i-1) = y(i-1) + step_size(i-1);
+        simplex(:,i) = wrap_angles(y);
     end 
 
-% Finding Centroid 
+    iter = 0;
+    
 
-    centriod = mean(simplex((:,1:end-1), 2));
+ % init 
+fvals = zeros(1, size(simplex,2));   % One function value per column
 
-% Reflecting 
-
-    xr = centroid + alpha*(centroid - worst);
-    xr = wrap_angles(xr);
-    fr = get_f(xr);
-
-   
-% Expansion 
-
-    if fr < fvals(1)
-        xe = centroid + gamma*(xr - centroid);
-        xe = wrap_angles(xe);
-        fe = get_f(xe);
-
-        if fe < fr
-            simplex(:,end) = xe;
-            fvals(end) = fr;
-        end 
-
-    elseif fr < fvals(end-1)
-        simplex(:,end) = xr
-        fvals(end) = fr;
-
-% Contraction 
-
-    else
-        xc = centroid + rho*(worst - centroid);
-        xc = wrap_angles(xc);
-        fc = get_f(xc);
-
-        if fc < fvals(end)
-            simplex(:,end) = xc;
-            fvals(end) = fc;
-        else 
-            
-% Shrink 
-
-            for i = 2:n+1
-                simplex(:,i) = best + sigma*(simplex(:,i) - best);
-                simplex(:,i) = wrap_angles(simplex(:,i));
-                fvals(i) = get_f(simplex(:,i));
-            end 
-        end 
-    end 
-    iter = iter + 1;
-    fprintf('Iterations %d: Time = %.2f seconds \n', iter, -favls(1));
-end 
-
-x_opt = simplex(:,1);
-f_opt = -fvals(1);
-
-fprintf('\nFinal Solution:\n');
-fprintf('Inclination: %.2f\n', x_opt(1));
-fprintf('RAAN: %.2f\n', x_opt(2));
-fprintf('Argument of Perigee (w): %.2f\n', x_opt(3));
-fprintf('Initial True Anomaly (nu): %.2f\n', x_opt(4));
-fprintf('Total SZA Time: %.2f seconds\n', f_opt);
-
+for i = 1:size(simplex,2)
+    fvals(i) = get_f(simplex, t0, tf);  % Evaluate objective at each simplex point
 end
 
+% Sorting
+   
+    while iter < maxiter
+        [fvals, idx] = sort(fvals);
+        simplex = simplex(:, idx);
+
+        best = simplex(:,1);
+        worst = simplex(:,end);
+
+        if max(abs(fvals - fvals(1))) < tol
+            break;
+        end 
+
+
+    % Finding Centroid 
+
+        centriod = mean(simplex(1:end-1, 2));
+        
+
+    % Reflecting 
+
+        xr = centroid + alpha*(centroid - worst);
+        xr = wrap_angles(xr);
+        fr = get_f(xr, t0, tf);
+
+
+    % Expansion 
+
+        if fr < fvals(1)
+            xe = centroid + gamma*(xr - centroid);
+            xe = wrap_angles(xe);
+            fe = get_f(xe, t0, tf);
+
+            if fe < fr
+                simplex(:,end) = xe;
+                fvals(end) = fr;
+            end 
+
+        elseif fr < fvals(end-1)
+            simplex(:,end) = xr;
+            fvals(end) = fr;
+
+    % Contraction 
+
+        else
+            xc = centroid + rho*(worst - centroid);
+            xc = wrap_angles(xc);
+            fc = get_f(xc);
+
+            if fc < fvals(end)
+                simplex(:,end) = xc;
+                fvals(end) = fc;
+            else 
+
+    % Shrink 
+
+                for i = 2:n+1
+                    simplex(:,i) = best + sigma*(simplex(:,i) - best);
+                    simplex(:,i) = wrap_angles(simplex(:,i));
+                    fvals(i) = get_f(simplex(:,i), t0, tf);
+                end 
+            end 
+        end 
+        iter = iter + 1;
+        fprintf('Iterations %d: Time = %.2f seconds \n', iter, -favls(1));
+    end 
+
+    x_opt = simplex(:,1);
+    f_opt = -fvals(1);
+
+    fprintf('\nFinal Solution:\n');
+    fprintf('Inclination: %.2f\n', x_opt(1));
+    fprintf('RAAN: %.2f\n', x_opt(2));
+    fprintf('Argument of Perigee (w): %.2f\n', x_opt(3));
+    fprintf('Initial True Anomaly (nu): %.2f\n', x_opt(4));
+    fprintf('Total SZA Time: %.2f seconds\n', f_opt);
+% 
+    end
+
 function x_wrapped = wrap_angles(x)
-x_wrapped = mod(x,360);
+    x_wrapped = mod(x,360);
+    
+
 end 
 

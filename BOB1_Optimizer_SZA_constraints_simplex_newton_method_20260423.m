@@ -25,21 +25,22 @@ x0 = [65, 40, 0, 30]; % Inclination, RAAN, argument of perigee (w), inital true 
 % --- Optimizing (Engineering Method) ---
 
 % optins for tuning minimizer 
-main_optimizer_options = optimoptions("fmincon", ... % 
-                                        "Algorithm","active-set");
+% main_optimizer_options = optimoptions("fmincon", ... % 
+%                                         "Algorithm","active-set");
 
 % Solver
-[best_IC] = main_optimizer(@objective_fun, x0, t0, tf, main_optimizer_options);
+% [best_IC] = main_optimizer(@objective_fun, x0, t0, tf, main_optimizer_options);
 
 
 
 % --- Optimizing (Class Implimentation)---
 
-nedler_mead(@objective_fun,x0,t0,tf)
+nelder_mead(@objective_fun,x0,t0,tf)
 
 % Simplex (needs to update to nedler-mead)
 % simplexmethod([1],[1],[1])
 
 % Quasai-Newton
 % Set maxiter = 30, if want to change go into quasi_newton.m
+
 % quasai_newton(@objective_fun,x0,t0,tf); % Displays optimal result after completion
