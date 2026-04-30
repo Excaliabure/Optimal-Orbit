@@ -35,6 +35,8 @@ main_optimizer_options = optimoptions("fmincon", ... %
 
 % --- Optimizing (Class Implimentation)---
 
+nedler_mead(@objective_fun,x0,t0,tf)
+
 % Simplex (needs to update to nedler-mead)
 % simplexmethod([1],[1],[1])
 
