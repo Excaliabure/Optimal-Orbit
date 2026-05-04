@@ -97,5 +97,15 @@ function r = objective_fun(x, t0, tf)
     
     fprintf('i : %.2f\nRAAN : %.2f\nw : %.2f\nnu : %.2f\nSZAT : %.2f\n', x(1),x(2),x(3),x(4), total_SZA_time);
 
+    fid = fopen('log_data.txt', 'a');
+
+
+
+    
+    fprintf(fid, '%.6f %.6f %.6f %.6f %.6f\n', ...
+        x(1), x(2), x(3), x(4), total_SZA_time);
+    
+    % Close file
+    fclose(fid);
 
 end
