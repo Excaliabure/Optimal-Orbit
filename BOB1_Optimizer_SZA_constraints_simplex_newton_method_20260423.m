@@ -30,12 +30,62 @@ x0 = [64; % Inclination
 % --- Optimizing (Engineering Method) ---
 
 % optins for tuning minimizer 
-% main_optimizer_options = optimoptions("fmincon", ... % 
-%                                         "Algorithm","active-set");
+% main_optimizer_options = optimoptions("fmincon", "Algorithm","active-set");
 
 % Solver
 % [best_IC] = main_optimizer(@objective_fun, x0, t0, tf, main_optimizer_options);
 
+data_O = readmatrix('log_data.txt');
+data = data_O;
+
+i = data(:,1);
+RAAN = data(:,2);
+w = data(:,3);
+nu = data(:,4);
+SZA = data(:,5);
+
+
+figure;
+subplot(2,3,1)
+plot(i)
+title("Optim: i")
+xlabel("Objective Function Call")
+grid on
+
+subplot(2,3,2)
+plot(RAAN)
+title("Optim: RAAN")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,3)
+plot(w)
+title("Optim: w")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,4)
+plot(nu)
+title("Optim: nu")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,5)
+plot(SZA)
+title("Optim: SZA")
+xlabel("Objective Function Call")
+grid on
+
+
+x = data;
+x_optimal_position = 5;
+fprintf('[Optim] Approximate optimal: %.6f %.6f %.6f %.6f\n', ...
+        x(x_optimal_position,1), x(x_optimal_position,2), x(x_optimal_position,3), x(x_optimal_position,4));
+
+fprintf('[Optim] SZA: %.6f\n',SZA(x_optimal_position,1));
 
 
 % --- Optimizing (Class Implimentation)---
@@ -45,6 +95,7 @@ x0 = [64; % Inclination
 % Set maxiter = 30, if want to change go into quasi_newton.m
 
 % quasai_newton(@objective_fun,x0,t0,tf) % Displays optimal result after completion
+
 
 % IC
 data_I = objective_fun(x0,t0,tf);
@@ -170,3 +221,59 @@ fprintf('[NEDLER] Approximate optimal: %.6f %.6f %.6f %.6f\n', ...
 
 fprintf('[NEDLER] SZA: %.6f\n',SZA(x_optimal_position,1));
 
+
+
+% ============================================================
+% DIFFERENCE CALCULATION: QUASI - NEDLER
+% ============================================================
+
+% Match lengths so subtraction is valid
+min_length = min(length(data_Q(:,5)), length(data_N(:,5)));
+
+% Parameter differences
+diff_i    = data_Q(1:min_length,1) - data_N(1:min_length,1);
+diff_RAAN = data_Q(1:min_length,2) - data_N(1:min_length,2);
+diff_w    = data_Q(1:min_length,3) - data_N(1:min_length,3);
+diff_nu   = data_Q(1:min_length,4) - data_N(1:min_length,4);
+diff_SZA  = data_Q(1:min_length,5) - data_N(1:min_length,5);
+
+% Plot differences
+figure;
+subplot(2,3,1)
+plot(diff_i)
+title("Difference: i (Quasi - Nedler)")
+xlabel("Objective Function Call")
+grid on
+
+subplot(2,3,2)
+plot(diff_RAAN)
+title("Difference: RAAN (Quasi - Nedler)")
+xlabel("Objective Function Call")
+grid on
+
+subplot(2,3,3)
+plot(diff_w)
+title("Difference: w (Quasi - Nedler)")
+xlabel("Objective Function Call")
+grid on
+
+subplot(2,3,4)
+plot(diff_nu)
+title("Difference: nu (Quasi - Nedler)")
+xlabel("Objective Function Call")
+grid on
+
+subplot(2,3,5)
+plot(diff_SZA)
+title("Difference: SZA (Quasi - Nedler)")
+xlabel("Objective Function Call")
+grid on
+
+
+% Optional summary statistics
+fprintf('\n--- DIFFERENCE SUMMARY (QUASI - NEDLER) ---\n');
+fprintf('Mean i Difference: %.6f\n', mean(diff_i));
+fprintf('Mean RAAN Difference: %.6f\n', mean(diff_RAAN));
+fprintf('Mean w Difference: %.6f\n', mean(diff_w));
+fprintf('Mean nu Difference: %.6f\n', mean(diff_nu));
+fprintf('Mean SZA Difference: %.6f\n', mean(diff_SZA));

@@ -25,32 +25,149 @@ x0 = [64; % Inclination
 
 
 
+
 % IC = Initial Conditions
 % --- Optimizing (Engineering Method) ---
 
 % optins for tuning minimizer 
-% main_optimizer_options = optimoptions("fmincon", ... % 
-%                                         "Algorithm","active-set");
+main_optimizer_options = optimoptions("fmincon", ... % 
+                                        "Algorithm","active-set");
 
 % Solver
-% [best_IC] = main_optimizer(@objective_fun, x0, t0, tf, main_optimizer_options);
+[best_IC] = main_optimizer(@objective_fun, x0, t0, tf, main_optimizer_options);
 
+data_O = readmatrix('log_data.txt');
+data = data_O;
+
+i = data(:,1);
+RAAN = data(:,2);
+w = data(:,3);
+nu = data(:,4);
+SZA = data(:,5);
+
+
+figure;
+subplot(2,3,1)
+plot(i)
+title("Optim: i")
+xlabel("Objective Function Call")
+grid on
+
+subplot(2,3,2)
+plot(RAAN)
+title("Optim: RAAN")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,3)
+plot(w)
+title("Optim: w")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,4)
+plot(nu)
+title("Optim: nu")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,5)
+plot(SZA)
+title("Optim: SZA")
+xlabel("Objective Function Call")
+grid on
+
+
+x = data;
+x_optimal_position = 86;
+fprintf('[Optim] Approximate optimal: %.6f %.6f %.6f %.6f\n', ...
+        x(x_optimal_position,1), x(x_optimal_position,2), x(x_optimal_position,3), x(x_optimal_position,4));
+
+fprintf('[Optim] SZA: %.6f\n',SZA(x_optimal_position,1));
 
 
 % --- Optimizing (Class Implimentation)---
 
-% nelder_mead(@objective_fun,x0,t0,tf)
-
-% Simplex (needs to update to nedler-mead)
-% simplexmethod([1],[1],[1])
 
 % Quasai-Newton
 % Set maxiter = 30, if want to change go into quasi_newton.m
 
-% quasai_newton(@objective_fun,x0,t0,tf); % Displays optimal result after completion
+% quasai_newton(@objective_fun,x0,t0,tf) % Displays optimal result after completion
+
+
+% IC
+data_I = objective_fun(x0,t0,tf);
+x = x0;
+SZA = data_I;
+x_optimal_position = 1;
+
+fprintf('[INITIAL] : %.6f %.6f %.6f %.6f\n', ...
+        x(x_optimal_position,1), x(x_optimal_position,2), x(x_optimal_position,3), x(x_optimal_position,4));
+
+fprintf('[NEDLER] SZA: %.6f\n',SZA(x_optimal_position,1));
+
+
+
 
 % Quasi Newton Testing Log Reading
 data_Q = readmatrix('EXP_quasi_newton_timestart_20241015_7_days_20260501.txt');
+
+data = data_Q;
+
+i = data(:,1);
+RAAN = data(:,2);
+w = data(:,3);
+nu = data(:,4);
+SZA = data(:,5);
+
+
+figure;
+subplot(2,3,1)
+plot(i)
+title("Quasi: i")
+xlabel("Objective Function Call")
+grid on
+
+subplot(2,3,2)
+plot(RAAN)
+title("Quasi: RAAN")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,3)
+plot(w)
+title("Quasi: w")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,4)
+plot(nu)
+title("Quasi: nu")
+xlabel("Objective Function Call")
+grid on
+
+
+subplot(2,3,5)
+plot(SZA)
+title("Quasi: SZA")
+xlabel("Objective Function Call")
+grid on
+
+
+x = data;
+x_optimal_position = 86;
+fprintf('[QUASI] Approximate optimal: %.6f %.6f %.6f %.6f\n', ...
+        x(x_optimal_position,1), x(x_optimal_position,2), x(x_optimal_position,3), x(x_optimal_position,4));
+
+fprintf('[QUASI] SZA: %.6f\n',SZA(x_optimal_position,1));
+
+
+% nelder_mead(@objective_fun,x0,t0,tf)
 
 % Nedler Mead Testing Log Reading
 data_N = readmatrix('EXP_nedler_mead_timestart_20241015_7_days_20260501.txt');
@@ -67,72 +184,41 @@ subplot(2,3,1)
 plot(i)
 title("Nedler: i")
 xlabel("Objective Function Call")
+grid on
 
 subplot(2,3,2)
 plot(RAAN)
 title("Nedler: RAAN")
 xlabel("Objective Function Call")
+grid on
+
 
 subplot(2,3,3)
 plot(w)
 title("Nedler: w")
 xlabel("Objective Function Call")
+grid on
+
 
 subplot(2,3,4)
 plot(nu)
 title("Nedler: nu")
 xlabel("Objective Function Call")
+grid on
+
 
 subplot(2,3,5)
 plot(SZA)
 title("Nedler: SZA")
+grid on
+
+
 xlabel("Objective Function Call")
 
 x = data;
 x_optimal_position = 27;
-fprintf('Approximate optimal: %.6f %.6f %.6f %.6f\n', ...
+fprintf('[NEDLER] Approximate optimal: %.6f %.6f %.6f %.6f\n', ...
         x(x_optimal_position,1), x(x_optimal_position,2), x(x_optimal_position,3), x(x_optimal_position,4));
 
-
-
-
-data = data_Q;
-
-i = data(:,1);
-RAAN = data(:,2);
-w = data(:,3);
-nu = data(:,4);
-SZA = data(:,5);
-figure;
-subplot(2,3,1)
-plot(i)
-title("Quasi: i")
-xlabel("Objective Function Call")
-
-subplot(2,3,2)
-plot(RAAN)
-title("Quasi: RAAN")
-xlabel("Objective Function Call")
-
-subplot(2,3,3)
-plot(w)
-title("Quasi: w")
-xlabel("Objective Function Call")
-
-subplot(2,3,4)
-plot(nu)
-title("Quasi: nu")
-xlabel("Objective Function Call")
-
-subplot(2,3,5)
-plot(SZA)
-title("Quasi: SZA")
-xlabel("Objective Function Call")
-
-x = data;
-x_optimal_position = 108;
-fprintf('%.6f %.6f %.6f %.6f\n', ...
-        x(x_optimal_position,1), x(x_optimal_position,2), x(x_optimal_position,3), x(x_optimal_position,4));
-
-fprintf()
+fprintf('[NEDLER] SZA: %.6f\n',SZA(x_optimal_position,1));
 
