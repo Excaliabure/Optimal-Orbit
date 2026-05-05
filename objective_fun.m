@@ -69,6 +69,7 @@ function r = objective_fun(x, t0, tf)
         
         % 1. Check if satellite is actually visible to GS
         % SZA is about the Sun, but "Coverage" requires the Sat
+        
         if accessStatus(acc, ti)
             
             % 2. Calculate Solar Zenith Angle (SZA)
@@ -87,8 +88,10 @@ function r = objective_fun(x, t0, tf)
             SZA = acosd(dot(zenith, sun_dir));
     
             % 3. Check if SZA is within your scientific window
-            if SZA >= solarZenithLowerBounds && SZA <= solarZenithUpperBounds
-                total_SZA_time = total_SZA_time + dt;
+            if SZA < 90
+                if SZA >= solarZenithLowerBounds && SZA <= solarZenithUpperBounds
+                    total_SZA_time = total_SZA_time + dt;
+                end
             end
         end
     end
