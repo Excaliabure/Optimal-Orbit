@@ -1,4 +1,4 @@
-# BOBSAT-1
+# About
 
 This repo is related to the University of California Merced's AIAA Cube Satellite project.
 
@@ -13,3 +13,8 @@ The problem consists of optimizing 4 varaibles and 1 constraint. (see Optimizer_
 Within the main file, there are two sets, one is hand made optimizer using the above methods, the other is the Engineering applicable method. 
 
 Simply for display, both methods will be present here for show, however engineering method will be the final one to be used
+
+
+# Status
+
+Complete
